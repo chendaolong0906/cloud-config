@@ -1,0 +1,143 @@
+server:
+  port: 4002
+#Redis cache 过期时间设置
+redis:
+  cache:
+    expiration: 3600
+
+# sleuth配置嗡嗡
+spring:
+  server:
+    minSpareThreads: 50
+    protocol: org.apache.coyote.http11.Http11Nio2Protocol
+    maxSpareThreads: 50
+    MaxFileSize: 300MB
+    redirectPort: 443
+    MaxRequestSize: 500MB
+    acceptorThreadCount: 4
+    maxThreads: 1000
+    compression: on
+    connectionTimeout: 10000
+    maxConnections: 10000
+  zipkin:
+    rabbitmq:
+      queue: zipkin
+  sleuth:
+    sampler:
+      percentage: 0.2
+
+# 分库分表支持
+sharding:
+  jdbc:
+    defaultDataSourceName:
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: com.mysql.jdbc.Driver
+      username: root
+      password: dxhy!@#
+      jdbc-url: jdbc:mysql://10.1.1.101:3306/user_center?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    datasource:
+      names: ds
+      ds:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        username: root
+        password: dxhy!@#
+        jdbc-url: jdbc:mysql://10.1.1.101:3306/user_center?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
+    config:
+      sharding:
+        tables:
+          sys_log:
+            actual-data-nodes: ds.sys_log_${0..1}
+            table-strategy:
+              inline:
+                sharding-column: id
+                algorithm-expression: sys_log_${id % 2}
+            key-generator-column-name: id
+
+#mybaits-plus配置，修改主键类型，mapper.xml、type 别名等
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  typeAliasesPackage: com.dxyun.heaven.admin.model.entity
+  global-config:
+    #主键类型  0:"数据库ID自增", 1:"用户输入ID",2:"全局唯一ID (数字类型唯一ID)", 3:"全局唯一ID UUID";
+    id-type: 0
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 1
+    #驼峰下划线转换
+    db-column-underline: true
+    #刷新mapper 调试神器
+    refresh-mapper: true
+    #数据库大写下划线转换
+    #capital-mode: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: true
+fdfs:
+  file-host: http://127.0.0.1:22121/
+  tracker-list:
+    - 127.0.0.1:22122
+    
+# 七牛OSS 配置
+# qiniu:
+#  accessKey: hM2cBDEM0FTYzpXbigRW90kV12NhhzhFM3jC
+#  secretKey: ENC(HM/K0KmtFoZSBhGDEA0Ez71ePTncZlQ954DfLNMZuOftKZq+2WR+dCXH9QEsf768q9wwd92RXLE=)
+#  bucket: pigcloud
+#  qiniuHost: http://p0hpm86wj.bkt.clouddn.com/
+authz:
+  url: http://newyfb.5ifapiao.com/api/authen/token
+  clientId: 9Y2FlBPptseaGGUQ1Bya
+  secret: o5TQxVUdvst3gTlJYXH6
+sms:
+  url: http://newyfb.5ifapiao.com/api4.0/v4/smsSend
+  templateCode: 1113 #验证码类短信模板
+  noticeTemplateCode: 1112 #通知类短信模板
+  resetPassWordTemplateCode: 1117 #重置密码通知类短信模板
+  quickLoginCode: 1115 #快捷登录验证码短信模板
+  weChatBindCode: 1116 #微信绑定短信验证码模板
+  expire: 5 # 分钟
+email:
+  url: http://newyfb.5ifapiao.com/api4.0/v4/emailSend
+  templateId: 51  #验证码类邮件模板
+  expire: 5         
+  noticeTemplateId: 53  #通知类邮件模板
+  resetPassWordNoticeTemplateId: 89  #重置密码邮件模板
+  noticeSystemName: 风险管家
+  noticeLoginUrl: http://www.baidu.com
+   #
+  riskManagerProductName: 风险管家
+  registeredRiskyTemplateId: 54 #已注册有风险
+  registeredNoRiskyTemplateId: 55 #已注册无风险
+  noRegisteredNoRiskyTemplateId: 56 #未注册无风险
+  noRegisteredRiskyTemplateId: 57 #未注册有风险
+  housekeeperAddSubTemplateId: 74 #优税管家添加子账号
+  housekeeperRegisterSubTemplateId: 75 #优税管家添加子账号（带密码）
+  weChatBindTemplateId: 80 #解绑微信验证码
+  yuanDeAddSubTemplateId: 83 #远得优税添加子账号
+  yuanDeRegisterSubTemplateId: 84 #远得优税添加子账号（带密码）
+  yongHangAddSubTemplateId: 85 #甬航优税添加子账号
+  yongHangRegisterSubTemplateId: 86 #甬航优税添加子账号（带密码）
+  yuanDetemplateId: 87  #远得优税验证码类邮件模板
+  yongHangtemplateId: 88  #甬航优税验证码类邮件模板
+  addUsertemplateId: 90  #新用户中心添加用户邮件模板
+
+  riskManagerdownloadUrl: https://pan.baidu.com/s/10ZQkq8tswFiYBzipKK7Bgg    提取码：g4md  #风险管家应用下载地址
+sensors:
+  project: default
+
+wxService:
+  baseUrl: https://wdfp.5ifapiao.com/wxservice
+  cacheTime: 180 # 二维码过期时间(秒)
+  appId: wx08abdb5f5e4361d5
+  
+reimburse:
+  url: http://101.124.13.204
+  secretId: "000001"
+  secretKey: "0931be4cc434934e64b1894aa2dba1ae"
+  
+product:
+  permissions: 1 # 0开启产品权限校验，1关闭产品权限校验
+  
+deploy:
+  type: local
+  
+
